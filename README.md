@@ -45,12 +45,14 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
 
 **Make sure you create a directory for your project**
 * The far top-right has a tab just below the RStudio "Close tab." Click it > New Project > New Directory > New Project > Name your directory and its location > Create Project.
+  
 **Installing Packages:**
 * install.package(“tideverse”)
 * install.packages("readxl") * readxl is for reading Excel file
 * install.packages("sqldf") * installing SQL package
 * install.packages("dplyr") * For data manipulation
 * install.packages("hms") *calculate the time difference between two datetimes
+  
 **Load packages:**
 * library(tidyverse)
 * library(readxl)
@@ -133,7 +135,7 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
       from  (select started_at1 , ended_at1 FROM combined_data
                 where Ride_time  <=0)")
 
- **cleaning data based on ride time by using condition function in R**
+ **Cleaning data based on ride time by using condition function in R**
 * clean_data_1 <- combined_data[combined_data$Ride_time >0,]
 
 # Analysis and Visualization 
@@ -161,7 +163,7 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
   
 **Convert average back to hms from above pivot table.**
 * pivot_table_all <- pivot_table_all %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>% mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%   mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
-# pie chart: 
+# Pie chart: 
 **Counting different types of members and bikes, then creating  a pie chart visualizing the relationship between rider types and bike types**
 
 **Count the number of each type of member i.e casual and member**
@@ -207,7 +209,7 @@ pivot_table_r_t <- pivot_table_r_t %>%
 
  # Filtering the Data by Bike Type and creating Pivot table:*Creating Separate Data Frames for Each Bike Type and  Creating a pivot table by rider_type to compare between between casual and member by  DAY OF WEEK*
  
-**creating data frame for electric type bike**
+**Creating data frame for electric type bike**
 * clean_data_electric <- clean_data_1 %>%
   filter(rideable_type =="electric_bike")
   
@@ -224,7 +226,7 @@ pivot_table_r_t <- pivot_table_r_t %>%
 **Print the pivot table**
 * print( pivot_table_electric)
 
-**creating data frame for docked type bike**
+**Creating data frame for docked type bike**
 *clean_data_docked <- clean_data_1 %>%
  filter(rideable_type =="docked_bike")
  
@@ -259,11 +261,32 @@ pivot_table_r_t <- pivot_table_r_t %>%
 * print( pivot_table_classic)
   
 #  Pivoting table and Creating Bar graph  for Count_of_ride  by Month between casual and member.
-*Following the above method  I made more  pivot table* 
+
+**Creating a pivot table for electric rider_type to compare between between casual and member BY MONTH.**
+ * pivot_table_electric_month <- clean_data_electric %>%
+   group_by(member_casual, month_name) %>%
+   summarise(
+     count = n(),
+     average = mean(as.numeric(Ride_time ), na.rm = TRUE), 
+     max_value=max(as.numeric(Ride_time ), na.rm = TRUE),
+     min_value=min(as.numeric(Ride_time ), na.rm = TRUE)
+   ) %>%
+   pivot_wider(names_from = member_casual, values_from = c(count, average,max_value,min_value), values_fill = list(count = 0, average = 0,max_value=0, min_value=0))
  
-**For creating Bar charts:**
-   **creating bar chart for Electric ride type by month** 
-      **Melt the data for easier plotting with ggplot2**
+ 
+ **Convert average back to hms if needed# Convert back to hms**
+ 
+ pivot_table_electric_month <-   pivot_table_electric_month %>%
+   mutate(across(starts_with("average_"), ~ as.hms(.))) %>% 
+   mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%   
+   mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
+ 
+ ** Print the pivot table**
+ print( pivot_table_electric_month)
+
+# For creating Bar charts:
+   # Creating bar chart for Electric ride type by month 
+      (**Melt the data for easier plotting with ggplot2**)
 * library(reshape2)
  * pivot_table_electric_month_melted <-melt(pivot_table_electric_month, id.vars = "month_name")
  
@@ -274,6 +297,42 @@ pivot_table_r_t <- pivot_table_r_t %>%
   **Create the bar chart**
  * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) + geom_bar(stat = "identity", position = "dodge") +
    labs(title = "Comparison of Electric Bike Usage by Month and Rider Type",
+        x = "Month",
+        y = "Count of Rides",
+        fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
+   theme_minimal()
+
+ # Creating bar chart for docked ride type by month 
+ **Melt the data for easier plotting with ggplot2**
+ * library(reshape2)
+  * pivot_table_docked_month_melted <- melt(pivot_table_docked_month, id.vars = "month_name")
+ 
+ **Filter for counts to create a bar chart**
+ * counts_data <- pivot_table_docked_month_melted %>%
+   filter(grepl("count_", variable))
+ 
+ **Create the bar chart**
+ * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) +
+   geom_bar(stat = "identity", position = "dodge") +
+   labs(title = "Comparison of docked Bike Usage by Month and Rider Type",
+        x = "Month",
+        y = "Count of Rides",
+        fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
+   theme_minimal()
+ 
+  # Creating bar chart for docked ride type by month 
+ **Melt the data for easier plotting with ggplot2**
+ * library(reshape2)
+ * pivot_table_classic_month_melted <- melt(pivot_table_classic_month, id.vars = "month_name")
+ 
+ **Filter for counts to create a bar chart**
+ * counts_data <- pivot_table_classic_month_melted %>%
+   filter(grepl("count_", variable))
+ 
+ **Create the bar chart**
+ * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) +
+   geom_bar(stat = "identity", position = "dodge") +
+   labs(title = "Comparison of classic Bike Usage by Month and Rider Type",
         x = "Month",
         y = "Count of Rides",
         fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
