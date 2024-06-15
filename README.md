@@ -83,56 +83,62 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
 *It helps in organizing and locating the files you need to work with*
 * data_dir <- "...//Case study/Bike sharing/divvy-tripdata/Case_study_data"
 
- List all CSV files in the directory:This step lists all the CSV files in the specified directory. Using pattern = "*.csv" ensures that only CSV files are listed, and full.names = TRUE gives the full file path for each file.
-file_list <- list.files(data_dir, pattern = "*.csv", full.names = TRUE)
+ **List all CSV files in the directory:** This step lists all the CSV files in the specified directory. Using pattern = "*.csv" ensures that only CSV files are listed, and full.names = TRUE gives the full file path for each file.
+* file_list <- list.files(data_dir, pattern = "*.csv", full.names = TRUE)
 
-Read the data files into a list of data frames:This step reads each CSV file into a separate data frame and stores them in a list. Using lapply allows you to apply the read.csv function to each file in the list.
-data_list <- lapply(file_list, read.csv)
+**Read the data files into a list of data frames:** *This step reads each CSV file into a separate data frame and stores them in a list. Using lapply allows you to apply the read.csv function to each file in the list.*
+* data_list <- lapply(file_list, read.csv)
 
- Initialize a list to store column names:This step initializes an empty list that will later be used to store the column names of each data frame. This can help in identifying and managing any differences in column names across the files
-column_names_list <- list()
+ **Initialize a list to store column names**: *This step initializes an empty list that will later be used to store the column names of each data frame. This can help in identifying and managing any differences in column names across the files*
+* column_names_list <- list()
 
-Loop through each file and read the column names:This loop iterates over each file in file_list, reads the file into a data frame, extracts the column names, and stores them in the column_names_list
-for (file in file_list) {data <- read.csv(file)column_names <- colnames(data) column_names_list[[file]] <- column_names}
-Create a data frame to compare column names:This creates a data frame column_names_df that lists each file and its corresponding columns. This makes it easier to compare and visualize which columns are present in each file.
-column_names_df <- data.frame( file =rep(names(column_names_list), sapply(column_names_list, length)),column = unlist(column_names_list))
+**Loop through each file and read the column names** *This loop iterates over each file in file_list, reads the file into a data frame, extracts the column names, and stores them in the column_names_list*
+* for (file in file_list) {data <- read.csv(file)column_names <- colnames(data) column_names_list[[file]] <- column_names}
+  
+**Create a data frame to compare column names:** *This creates a data frame column_names_df that lists each file and its corresponding columns. This makes it easier to compare and visualize which columns are present in each file.*
+* column_names_df <- data.frame( file =rep(names(column_names_list), sapply(column_names_list, length)),column = unlist(column_names_list))
 
-Check if all files have the same columns:common_columns will store the names of columns that are common across all files.
-common_columns <- Reduce(intersect, column_names_list)
+**Check if all files have the same columns:** *common_columns will store the names of columns that are common across all files.*
+* common_columns <- Reduce(intersect, column_names_list)
 
-checks if all files have the same columns by comparing their column names with the common columns identified earlier:This code snippet is a part of the data validation process, ensuring that all files have consistent column names before merging them into a single data frame
-if (all(sapply(column_names_list, function(x) identical(common_columns, x)))) {print("All files have the same columns.")} else { print("There are differences in the column names across files.") print(column_names_df)}
+**checks if all files have the same columns by comparing their column names with the common columns identified earlier:** *This code snippet is a part of the data validation process, ensuring that all files have consistent column names before merging them into a single data frame* 
+* if (all(sapply(column_names_list, function(x) identical(common_columns, x)))) {print("All files have the same columns.")} else { print("There are differences in the column names across files.") print(column_names_df)}
 
-3.Combining data and making new Data Frame
-1.Making one large data frame:Combine all data frames into one
-combined_data <- bind_rows(data_list)
+# Combining data and making new Data Frame
 
-4. Convert Data/Time stamp to Date/Time
-Convert started_at  and ended_at to date-time format
-combined_data$started_at1 <- ymd_hms(combined_data$started_at)
-combined_data$ended_at1 <- ymd_hms(combined_data$ended_at)
-Extract year and month and day_of_week from the started_at column
-Extract year
-combined_data$year <- year(combined_data$started_at1)
- Extract month name
-combined_data$month_name <- month(combined_data$started_at1, label = TRUE, abbr = FALSE)
- Extract day of the week
-combined_data$day_of_week <- weekdays(combined_data$started_at1)
-Calculate time difference
-combined_data$Ride_time  <- as_hms(difftime(combined_data$ended_at1, combined_data$started_at1))
+**Making one large data frame:** *Combine all data frames into one*
+* combined_data <- bind_rows(data_list)
 
-5. Data Cleaning 
-checking negative and zero ride time by using the where function in Sqldf.
-sqldf("SELECT 'checking negative and zero ride time ' ,count (*)
+# Convert Data/Time stamp to Date/Time
+**Convert started_at  and ended_at to date-time format**
+* combined_data$started_at1 <- ymd_hms(combined_data$started_at)
+* combined_data$ended_at1 <- ymd_hms(combined_data$ended_at)
+  
+**Extract year and month and day_of_week from the started_at column**
+**Extract year**
+* combined_data$year <- year(combined_data$started_at1)
+  
+ **Extract month name**
+* combined_data$month_name <- month(combined_data$started_at1, label = TRUE, abbr = FALSE)
+  
+ **Extract day of the week**
+* combined_data$day_of_week <- weekdays(combined_data$started_at1)
+  
+**Calculate time difference**
+* combined_data$Ride_time  <- as_hms(difftime(combined_data$ended_at1, combined_data$started_at1))
+
+# Data Cleaning 
+**checking negative and zero ride time by using the where function in Sqldf**
+* sqldf("SELECT 'checking negative and zero ride time ' ,count (*)
       from  (select started_at1 , ended_at1 FROM combined_data
                 where Ride_time  <=0)")
 
- cleaning data based on ride time by using condition function in R
-clean_data_1 <- combined_data[combined_data$Ride_time >0,]
+ **cleaning data based on ride time by using condition function in R**
+* clean_data_1 <- combined_data[combined_data$Ride_time >0,]
 
-6. Analysis and Visualization 
-Using Count function to count number of rows:
-Use sqldf to count the total number of rows as 'total rows' title.
+# Analysis and Visualization 
+**Using Count function to count number of rows:**
+*Use sqldf to count the total number of rows as 'total rows' title.*
 sqldf("SELECT 'total_rows', COUNT(*) AS total_rows FROM clean_data_1")
 
 Using SELECT DISTINCT to distinct value in ride_id : Use sqldf to find distinct values in the ride_id column with 'distinct_ids' title
