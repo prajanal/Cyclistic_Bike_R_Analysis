@@ -286,39 +286,39 @@ pivot_table_r_t <- pivot_table_r_t %>%
 
 # For creating Bar charts:
    # Creating bar chart for Electric ride type by month 
-      (**Melt the data for easier plotting with ggplot2**)
-* library(reshape2)
- * pivot_table_electric_month_melted <-melt(pivot_table_electric_month, id.vars = "month_name")
+   (**Melt the data for easier plotting with ggplot2**)
+    * library(reshape2)
+      * pivot_table_electric_month_melted <-melt(pivot_table_electric_month, id.vars = "month_name")
  
 **Filter for counts to create a bar chart**
- * counts_data <- pivot_table_electric_month_melted %>%
-   filter(grepl("count_", variable))
+  * counts_data <- pivot_table_electric_month_melted %>%
+      filter(grepl("count_", variable))
  
   **Create the bar chart**
- * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) + geom_bar(stat = "identity", position = "dodge") +
-   labs(title = "Comparison of Electric Bike Usage by Month and Rider Type",
+   * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) + geom_bar(stat = "identity", position = "dodge") +
+       labs(title = "Comparison of Electric Bike Usage by Month and Rider Type",
         x = "Month",
         y = "Count of Rides",
         fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
-   theme_minimal()
+       theme_minimal()
 
  # Creating bar chart for docked ride type by month 
  **Melt the data for easier plotting with ggplot2**
- * library(reshape2)
-  * pivot_table_docked_month_melted <- melt(pivot_table_docked_month, id.vars = "month_name")
+   * library(reshape2)
+     * pivot_table_docked_month_melted <- melt(pivot_table_docked_month, id.vars = "month_name")
  
  **Filter for counts to create a bar chart**
- * counts_data <- pivot_table_docked_month_melted %>%
-   filter(grepl("count_", variable))
+   * counts_data <- pivot_table_docked_month_melted %>%
+      filter(grepl("count_", variable))
  
  **Create the bar chart**
  * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) +
-   geom_bar(stat = "identity", position = "dodge") +
-   labs(title = "Comparison of docked Bike Usage by Month and Rider Type",
-        x = "Month",
-        y = "Count of Rides",
-        fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
-   theme_minimal()
+      geom_bar(stat = "identity", position = "dodge") +
+       labs(title = "Comparison of docked Bike Usage by Month and Rider Type",
+          x = "Month",
+          y = "Count of Rides",
+         fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
+        theme_minimal()
  
   # Creating bar chart for docked ride type by month 
  **Melt the data for easier plotting with ggplot2**
