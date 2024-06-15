@@ -207,7 +207,7 @@ pivot_table_r_t <- pivot_table_r_t %>%
 **Combining the two columns into one category:** *Combining member_casual and    rideable_type into a single column named category*
 * clean_data_1$category <- paste(clean_data_1$member_casual, clean_data_1$rideable_type, sep = "-")
 
- # Filtering the Data by Bike Type and creating Pivot table:*Creating Separate Data Frames for Each Bike Type and  Creating a pivot table by rider_type to compare between between casual and member by  DAY OF WEEK*
+ # Filtering the data by Bike type and creating Pivot table:Creating separate data frames for each bike type and  creating a pivot table by rider_type to compare between between casual and member by  DAY OF WEEK
  
 **Creating data frame for electric type bike**
 * clean_data_electric <- clean_data_1 %>%
