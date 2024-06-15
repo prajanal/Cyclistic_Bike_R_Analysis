@@ -248,7 +248,7 @@ pivot_table_r_t <- pivot_table_r_t %>%
 * clean_data_classic <- clean_data_1 %>%
   filter(rideable_type =="classic_bike")
 
- **Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK**
+ **Creating a pivot table for classic rider_type to compare between between casual and member  DAY OF WEEK**
 * pivot_table_classic <- clean_data_classic %>% group_by(member_casual, day_of_week) %>%
    summarise(count = n(),
    average = mean(as.numeric(Ride_time ), na.rm = TRUE),  max_value=max(as.numeric(Ride_time ), na.rm = TRUE),min_value=min(as.numeric(Ride_time ), na.rm = TRUE)  ) %>%
@@ -320,7 +320,7 @@ pivot_table_r_t <- pivot_table_r_t %>%
          fill = "Rider Type") + scale_y_continuous(labels = scales::comma) + # Format y-axis labels
         theme_minimal()
  
-  # Creating bar chart for docked ride type by month 
+  # Creating bar chart for classic ride type by month 
  **Melt the data for easier plotting with ggplot2**
  * library(reshape2)
  * pivot_table_classic_month_melted <- melt(pivot_table_classic_month, id.vars = "month_name")
