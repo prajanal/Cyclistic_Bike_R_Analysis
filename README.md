@@ -154,37 +154,46 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
 **Find mean value  in Ride_time  column**
 * mean_value <-as_hms ( mean(clean_data_1$Ride_time ))
 
-4.  Data aggregation and Pivoting for pie chart
- Creating a pivot table with average, max, min and count 
-pivot_table_all <- clean_data_1 %>% group_by(member_casual, day_of_week) %>% summarise(count = n(),average = mean(as.numeric(Ride_time ), na.rm = TRUE), max_value=max(as.numeric(Ride_time ), na.rm = TRUE),min_value=min(as.numeric(Ride_time ), na.rm = TRUE) ) %>%
- pivot_wider(names_from = member_casual, values_from = c(count, average,max_value,min_value), values_fill = list(count = 0, average = 0,max_value=0, min_value=0))
+# Data aggregation and Pivoting for pie chart
+ **Creating a pivot table with average, max, min and count**
+* pivot_table_all <- clean_data_1 %>% group_by(member_casual, day_of_week) %>% summarise(count = n(),average = mean(as.numeric(Ride_time ), na.rm = TRUE), max_value=max(as.numeric(Ride_time ), na.rm = TRUE),min_value=min(as.numeric(Ride_time ), na.rm = TRUE) ) %>%
+  pivot_wider(names_from = member_casual, values_from = c(count, average,max_value,min_value), values_fill = list(count = 0, average = 0,max_value=0, min_value=0))
   
-Convert average back to hms from above pivot table.
-pivot_table_all <- pivot_table_all %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>% mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%   mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
-4.pie chart: Counting different types of members and bikes, then creating  a pie chart visualizing the relationship between rider types and bike types
-Count the number of each type of member i.e casual and member
- count_C_M <- table(clean_data_1$member_casual)
-print(count_bike_cm) 
-Count the number of each type of bike
-count_bike <- table(clean_data_1$rideable_type)
-print(count_bike)
-Count which type of bike is used by member and casual rider
-count_bike_cm <- table(clean_data_1$rideable_type , clean_data_1$member_casual)
-print(count_bike_cm)
-Convert the table into a vector for plotting
-counts <- as.vector(count_bike_cm)
-Calculate percentages for labeling the pie chart 
-total <- sum(counts)
-percentages <- round(counts / total * 100)
-Get the combinations of column and row names
-labels <- outer(rownames(count_bike_cm), colnames(count_bike_cm), paste, sep = "-")
-Format labels with percentages
-labels_with_percentage <- paste(labels, "\n", percentages, "%", sep = "")
-Create a pie chart with custom labels
-pie(counts, labels = labels_with_percentage, main = "Pie Chart with Rider Types and Bike Types ")
+**Convert average back to hms from above pivot table.**
+* pivot_table_all <- pivot_table_all %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>% mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%   mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
+# pie chart: 
+**Counting different types of members and bikes, then creating  a pie chart visualizing the relationship between rider types and bike types**
 
-5. Creating a pivot table to see how different bikes are used by day of week(count) and on  average,max and min ride time.
-pivot_table_r_t <- clean_data_1 %>%
+**Count the number of each type of member i.e casual and member**
+* count_C_M <- table(clean_data_1$member_casual)
+* print(count_bike_cm)
+  
+**Count the number of each type of bike**
+* count_bike <- table(clean_data_1$rideable_type)
+* print(count_bike)
+  
+**Count which type of bike is used by member and casual rider**
+* count_bike_cm <- table(clean_data_1$rideable_type , clean_data_1$member_casual)
+* print(count_bike_cm)
+  
+**Convert the table into a vector for plotting**
+* counts <- as.vector(count_bike_cm)
+  
+**Calculate percentages for labeling the pie chart**
+* total <- sum(counts)
+* percentages <- round(counts / total * 100)
+  
+**Get the combinations of column and row names**
+* labels <- outer(rownames(count_bike_cm), colnames(count_bike_cm), paste, sep = "-")
+  
+**Format labels with percentages**
+* labels_with_percentage <- paste(labels, "\n", percentages, "%", sep = "")
+  
+**Create a pie chart with custom labels**
+* pie(counts, labels = labels_with_percentage, main = "Pie Chart with Rider Types and Bike Types ")
+
+# Creating a pivot table to see how different bikes are used by day of week(count) and on  average,max and min ride time.
+* pivot_table_r_t <- clean_data_1 %>%
   group_by(rideable_type, day_of_week) %>%
   summarise(  count = n(), average = mean(as.numeric(Ride_time ), na.rm = TRUE),  max_value=max(as.numeric(Ride_time ), na.rm = TRUE),   min_value=min(as.numeric(Ride_time ), na.rm = TRUE) ) %>%  pivot_wider(names_from = rideable_type, values_from = c(count, average,max_value,min_value), values_fill = list(count = 0, average = 0,max_value=0, min_value=0))
  Convert average back to hms 
@@ -192,44 +201,50 @@ pivot_table_r_t <- pivot_table_r_t %>%
  mutate(across(starts_with("average_"), ~ as.hms(.))) %>%  mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%    mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
 
 
-6. Filtering, Summarizing, and Pivoting Data for Different Bike Types
-Combining the two columns into one category:Combining member_casual and    rideable_type into a single column named category
-clean_data_1$category <- paste(clean_data_1$member_casual, clean_data_1$rideable_type, sep = "-")
+# Filtering, Summarizing, and Pivoting Data for Different Bike Types
+**Combining the two columns into one category:** *Combining member_casual and    rideable_type into a single column named category*
+* clean_data_1$category <- paste(clean_data_1$member_casual, clean_data_1$rideable_type, sep = "-")
 
- Filtering the Data by Bike Type and creating Pivot table::Creating Separate Data Frames for Each Bike Type and  Creating a pivot table by rider_type to compare between between casual and member by  DAY OF WEEK
-creating data frame for electric type bike
-clean_data_electric <- clean_data_1 %>%
-filter(rideable_type =="electric_bike")
- Creating a pivot table for electric rider_type to compare between casual    and member BY DAY OF WEEK.
-pivot_table_electric<-clean_data_electric%>%
-group_by(member_casual, day_of_week) %>%
-summarise(count=n(),average=mean(as.numeric(Ride_time),na.rm=TRUE),max_value=max(as.numeric(Ride_time), na.rm=TRUE),min_value=min(as.numeric(Ride_time),na.rm= TRUE))%>%
-pivot_wider(names_from=member_casual, values_from=c(count,average,max_value,min_value),values_fill= list(count = 0, average = 0,max_value=0, min_value=0))  
- Convert average back to hms 
-pivot_table_electric<-pivot_table_electric%>%
-mutate(across(starts_with("average_"),~as.hms(.)))%>% mutate(across(starts_with("max_value_"),~as.hms(.)))%>%mutate(across(starts_with("min_value_"), as.hms(.))) 
- Print the pivot table
-print( pivot_table_electric)
+ # Filtering the Data by Bike Type and creating Pivot table:*Creating Separate Data Frames for Each Bike Type and  Creating a pivot table by rider_type to compare between between casual and member by  DAY OF WEEK*
+ 
+**creating data frame for electric type bike**
+* clean_data_electric <- clean_data_1 %>%
+  filter(rideable_type =="electric_bike")
+  
+ **Creating a pivot table for electric rider_type to compare between casual and member BY DAY OF WEEK.**
+* pivot_table_electric<-clean_data_electric%>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(count=n(),average=mean(as.numeric(Ride_time),na.rm=TRUE),max_value=max(as.numeric(Ride_time), na.rm=TRUE),min_value=min(as.numeric(Ride_time),na.rm= TRUE))%>%
+  pivot_wider(names_from=member_casual, values_from=c(count,average,max_value,min_value),values_fill= list(count = 0, average = 0,max_value=0, min_value=0))
+   
+ **Convert average back to hms**
+* pivot_table_electric<-pivot_table_electric%>%
+  mutate(across(starts_with("average_"),~as.hms(.)))%>% mutate(across(starts_with("max_value_"),~as.hms(.)))%>%mutate(across(starts_with("min_value_"), as.hms(.)))
+  
+**Print the pivot table**
+* print( pivot_table_electric)
 
- creating data frame for docked type bike
-clean_data_docked <- clean_data_1 %>%
+**creating data frame for docked type bike**
+*clean_data_docked <- clean_data_1 %>%
  filter(rideable_type =="docked_bike")
-Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK
-pivot_table_docked<-clean_data_docked%>%
-group_by(member_casual,day_of_week)%>%
-summarise(count=n(),average=mean(as.numeric(Ride_time),na.rm=TRUE),max_value=max(as.numeric(Ride_time),na.m=TRUE),min_value=min(as.numeric(Ride_time),na.rm=TRUE)%>%  pivot_wider(names_from=member_casual,values_from= c(count,average,max_value,min_value),values_fill=list(count=0,average= 0,max_value=0, min_value=0))
+ 
+**Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK**
+* pivot_table_docked<-clean_data_docked%>%
+   group_by(member_casual,day_of_week)%>%
+   summarise(count=n(),average=mean(as.numeric(Ride_time),na.rm=TRUE),max_value=max(as.numeric(Ride_time),na.m=TRUE),min_value=min(as.numeric(Ride_time),na.rm=TRUE)%>%  pivot_wider(names_from=member_casual,values_from= 
+    c(count,average,max_value,min_value),values_fill=list(count=0,average= 0,max_value=0, min_value=0))
  
  
-B. Convert average back to hms 
-pivot_table_docked <-  pivot_table_docked %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>% mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%    mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
+**Convert average back to hms**
+* pivot_table_docked <-  pivot_table_docked %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>% mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%    mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
  
  
-C. Print the pivot table
- print( pivot_table_docked)
+**Print the pivot table**
+ * print( pivot_table_docked)
 
-         3. creating data frame for classic type bike:
-clean_data_classic <- clean_data_1 %>%
-filter(rideable_type =="classic_bike")
+**creating data frame for classic type bike:**
+* clean_data_classic <- clean_data_1 %>%
+  filter(rideable_type =="classic_bike")
 
  Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK
 pivot_table_classic <- clean_data_classic %>% group_by(member_casual, day_of_week) %>%
