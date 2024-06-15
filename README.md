@@ -246,37 +246,33 @@ pivot_table_r_t <- pivot_table_r_t %>%
 * clean_data_classic <- clean_data_1 %>%
   filter(rideable_type =="classic_bike")
 
- Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK
-pivot_table_classic <- clean_data_classic %>% group_by(member_casual, day_of_week) %>%
- summarise(count = n(),
- average = mean(as.numeric(Ride_time ), na.rm = TRUE),  max_value=max(as.numeric(Ride_time ), na.rm = TRUE),min_value=min(as.numeric(Ride_time ), na.rm = TRUE)  ) %>%
-
+ **Creating a pivot table for docked rider_type to compare between between casual and member  DAY OF WEEK**
+* pivot_table_classic <- clean_data_classic %>% group_by(member_casual, day_of_week) %>%
+   summarise(count = n(),
+   average = mean(as.numeric(Ride_time ), na.rm = TRUE),  max_value=max(as.numeric(Ride_time ), na.rm = TRUE),min_value=min(as.numeric(Ride_time ), na.rm = TRUE)  ) %>%
  pivot_wider(names_from = member_casual, values_from = c(count, average,max_value,min_value), values_fill = list(count = 0, average = 0,max_value=0, min_value=0))
-
-
  
+ **Convert average back to hms**
+ * pivot_table_classic <-  pivot_table_classic %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>%  mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%    mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
  
- Convert average back to hms 
- pivot_table_classic <-  pivot_table_classic %>% mutate(across(starts_with("average_"), ~ as.hms(.))) %>%  mutate(across(starts_with ("max_value_"), ~ as.hms(. ))) %>%    mutate(across(starts_with ("min_value_"), ~ as.hms(.)))
+**Print the pivot table**
+* print( pivot_table_classic)
+  
+#  Pivoting table and Creating Bar graph  for Count_of_ride  by Month between casual and member.
+*Following the above method  I made more  pivot table* 
  
+**For creating Bar charts:**
+   **creating bar chart for Electric ride type by month** 
+      **Melt the data for easier plotting with ggplot2**
+* library(reshape2)
+ * pivot_table_electric_month_melted <-melt(pivot_table_electric_month, id.vars = "month_name")
  
- Print the pivot table
-print( pivot_table_classic)
-7. Pivoting table and Creating Bar graph  for Count_of_ride  by Month between casual and member.
-Following the above method  I made more  pivot table  
+**Filter for counts to create a bar chart**
+ * counts_data <- pivot_table_electric_month_melted %>%
+   filter(grepl("count_", variable))
  
-For creating Bar charts:
-creating bar chart for Electric ride type by month 
-  Melt the data for easier plotting with ggplot2
-library(reshape2)
- pivot_table_electric_month_melted <-melt(pivot_table_electric_month, id.vars = "month_name")
- 
- Filter for counts to create a bar chart
- counts_data <- pivot_table_electric_month_melted %>%
-filter(grepl("count_", variable))
- 
-  Create the bar chart
- ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) + geom_bar(stat = "identity", position = "dodge") +
+  **Create the bar chart**
+ * ggplot(data = counts_data, aes(x = month_name, y = value, fill = variable)) + geom_bar(stat = "identity", position = "dodge") +
    labs(title = "Comparison of Electric Bike Usage by Month and Rider Type",
         x = "Month",
         y = "Count of Rides",
