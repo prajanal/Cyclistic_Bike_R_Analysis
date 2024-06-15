@@ -139,17 +139,20 @@ Target Marketing: Concentrate marketing efforts on areas with a high concentrati
 # Analysis and Visualization 
 **Using Count function to count number of rows:**
 *Use sqldf to count the total number of rows as 'total rows' title.*
-sqldf("SELECT 'total_rows', COUNT(*) AS total_rows FROM clean_data_1")
+* sqldf("SELECT 'total_rows', COUNT(*) AS total_rows FROM clean_data_1")
 
-Using SELECT DISTINCT to distinct value in ride_id : Use sqldf to find distinct values in the ride_id column with 'distinct_ids' title
-sqldf("SELECT DISTINCT 'distinct_ids',COUNT(ride_id) FROM clean_data_1")
-Time for descriptive analysis on ride_time (all figures in hms)
- Find maximum value in Ride_time  column 
-max_value <- as_hms (max(clean_data_1$Ride_time ))
-Find minimum value in Ride_time  column 
-min_value <- as_hms (min(clean_data_1$Ride_time ))
-Find mean value  in Ride_time  column
-mean_value <-as_hms ( mean(clean_data_1$Ride_time ))
+**Using SELECT DISTINCT to distinct value in ride_id** *Use sqldf to find distinct values in the ride_id column with 'distinct_ids' title*
+* sqldf("SELECT DISTINCT 'distinct_ids',COUNT(ride_id) FROM clean_data_1")
+  
+**Time for descriptive analysis on ride_time (all figures in hms)**
+ **Find maximum value in Ride_time  column**
+* max_value <- as_hms (max(clean_data_1$Ride_time ))
+  
+**Find minimum value in Ride_time  column**
+* min_value <- as_hms (min(clean_data_1$Ride_time ))
+  
+**Find mean value  in Ride_time  column**
+* mean_value <-as_hms ( mean(clean_data_1$Ride_time ))
 
 4.  Data aggregation and Pivoting for pie chart
  Creating a pivot table with average, max, min and count 
